@@ -1,0 +1,99 @@
+@model Group5Flight.Models.Flight
+@{
+    ViewData["Title"] = "Flight Details";
+    var from = ViewBag.From ?? "";
+    var to = ViewBag.To ?? "";
+    var date = ViewBag.Date ?? "";
+    var cabinType = ViewBag.CabinType ?? "All";
+    var airlineId = ViewBag.AirlineId;
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Flight Details</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 200px;">Flight Code</th>
+                        <td><strong>@Model.FlightCode</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Route</th>
+                        <td>@Model.From to @Model.To</td>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <td>@Model.Date.ToString("dddd, MMMM dd, yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th>Departure Time</th>
+                        <td>@Model.DepartureTime.ToString("HH:mm")</td>
+                    </tr>
+                    <tr>
+                        <th>Arrival Time</th>
+                        <td>@Model.ArrivalTime.ToString("HH:mm")</td>
+                    </tr>
+                    <tr>
+                        <th>Duration</th>
+                        <td>@Model.DurationDisplay</td>
+                    </tr>
+                    <tr>
+                        <th>Cabin Type</th>
+                        <td>@Model.CabinType</td>
+                    </tr>
+                    <tr>
+                        <th>Aircraft Type</th>
+                        <td>@Model.AircraftType</td>
+                    </tr>
+                    <tr>
+                        <th>Airline</th>
+                        <td>@(Model.Airline?.Name ?? "N/A")</td>
+                    </tr>
+                    <tr>
+                        <th>Emission</th>
+                        <td>@Model.Emission</td>
+                    </tr>
+                    <tr>
+                        <th>Price</th>
+                        <td><h5 class="text-primary">$@Model.Price.ToString("F2")</h5></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 text-center">
+                @if (Model.Airline != null)
+                {
+                    <img src="~/images/@Model.Airline.ImageName" alt="@Model.Airline.Name" 
+                         style="max-width: 150px; max-height: 150px;" />
+                    <h5 class="mt-3">@Model.Airline.Name</h5>
+                }
+            </div>
+        </div>
+        
+        <hr />
+        
+        <div class="d-flex gap-2">
+            <a asp-action="Index" 
+               asp-route-from="@from"
+               asp-route-to="@to"
+               asp-route-departureDate="@date"
+               asp-route-cabinType="@cabinType"
+               asp-route-airlineId="@airlineId"
+               class="btn btn-secondary">
+                Back to Home
+            </a>
+            
+            <form asp-action="Select" method="post" class="d-inline">
+                <input type="hidden" name="id" value="@Model.FlightId" />
+                <input type="hidden" name="from" value="@from" />
+                <input type="hidden" name="to" value="@to" />
+                <input type="hidden" name="date" value="@date" />
+                <input type="hidden" name="cabinType" value="@cabinType" />
+                <input type="hidden" name="airlineId" value="@airlineId" />
+                <button type="submit" class="btn btn-success">Select Flight</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+@{
+    Layout = "_AirlineLayout";
+    ViewData["Title"] = "Airline Dashboard";
+}
+
+<div class="airline-dashboard p-5 text-white rounded">
+    <h1>Airline Dashboard</h1>
+    <p class="lead">Welcome to the Airline Portal</p>
+    <hr class="my-4" />
+    <p>Manage your flights and view regulations from this dashboard.</p>
+    <a asp-area="Airline" asp-controller="Flights" asp-action="Index" class="btn btn-light">
+        Go to Flight Management
+    </a>
+</div>

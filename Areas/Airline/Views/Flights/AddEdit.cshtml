@@ -1,0 +1,131 @@
+@model Group5Flight.Models.FlightEditViewModel
+@{
+    var isEdit = Model.Flight.FlightId != 0;
+    ViewData["Title"] = isEdit ? "Edit Flight" : "Add Flight";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header @(isEdit ? "bg-warning" : "bg-success") text-white">
+        <h4 class="mb-0">@(isEdit ? "Edit Flight" : "Add New Flight")</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="@(isEdit ? "Edit" : "Add")" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Flight.FlightId" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Flight.FlightCode" class="form-label">Flight Code</label>
+                        <input asp-for="Flight.FlightCode" class="form-control" />
+                        <span asp-validation-for="Flight.FlightCode" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Flight.AirlineId" class="form-label">Airline</label>
+                        <select asp-for="Flight.AirlineId" class="form-select" asp-items="Model.AirlineList">
+                            <option value="">Select Airline</option>
+                        </select>
+                        <span asp-validation-for="Flight.AirlineId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Flight.From" class="form-label">From</label>
+                        <input asp-for="Flight.From" class="form-control" />
+                        <span asp-validation-for="Flight.From" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Flight.To" class="form-label">To</label>
+                        <input asp-for="Flight.To" class="form-control" />
+                        <span asp-validation-for="Flight.To" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Flight.Date" class="form-label">Date</label>
+                        <input asp-for="Flight.Date" type="date" class="form-control" 
+                               value="@Model.Flight.Date.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Flight.Date" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Flight.DepartureTime" class="form-label">Departure Time</label>
+                        <input asp-for="Flight.DepartureTime" type="datetime-local" class="form-control" 
+                               value="@Model.Flight.DepartureTime.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="Flight.DepartureTime" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Flight.ArrivalTime" class="form-label">Arrival Time</label>
+                        <input asp-for="Flight.ArrivalTime" type="datetime-local" class="form-control" 
+                               value="@Model.Flight.ArrivalTime.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="Flight.ArrivalTime" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Flight.CabinType" class="form-label">Cabin Type</label>
+                        <select asp-for="Flight.CabinType" class="form-select" asp-items="Model.CabinTypeList">
+                            <option value="">Select Cabin Type</option>
+                        </select>
+                        <span asp-validation-for="Flight.CabinType" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Flight.AircraftType" class="form-label">Aircraft Type</label>
+                        <select asp-for="Flight.AircraftType" class="form-select" asp-items="Model.AircraftTypeList">
+                            <option value="">Select Aircraft Type</option>
+                        </select>
+                        <span asp-validation-for="Flight.AircraftType" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Flight.Emission" class="form-label">Emission</label>
+                        <select asp-for="Flight.Emission" class="form-select" asp-items="Model.EmissionList">
+                            <option value="">Select Emission Level</option>
+                        </select>
+                        <span asp-validation-for="Flight.Emission" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Flight.Price" class="form-label">Price</label>
+                        <input asp-for="Flight.Price" type="number" step="0.01" class="form-control" />
+                        <span asp-validation-for="Flight.Price" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

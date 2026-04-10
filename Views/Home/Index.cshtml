@@ -1,0 +1,141 @@
+﻿@model Group5Flight.Models.HomeViewModel
+@{
+    ViewData["Title"] = "Search Flights";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Filter Flights</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Filter" method="post">
+                    
+                    <div class="mb-3">
+                        <label asp-for="From" class="form-label">From</label>
+                        <select asp-for="From" class="form-select">
+                            <option value="">All Cities</option>
+                            @foreach (var city in Model.FromCities)
+                            {
+                                <option value="@city" selected="@(Model.From == city ? "selected" : null)">
+                                    @city
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="To" class="form-label">To</label>
+                        <select asp-for="To" class="form-select">
+                            <option value="">All Cities</option>
+                            @foreach (var city in Model.ToCities)
+                            {
+                                <option value="@city" selected="@(Model.To == city ? "selected" : null)">
+                                    @city
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DepartureDate" class="form-label">Departure Date</label>
+                        <input asp-for="DepartureDate" type="date" class="form-control" 
+                               value="@(Model.DepartureDate?.ToString("yyyy-MM-dd") ?? "")" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CabinType" class="form-label">Cabin Type</label>
+                        <select asp-for="CabinType" class="form-select">
+                            @foreach (var cabin in Group5Flight.Models.HomeViewModel.CabinTypes)
+                            {
+                                <option value="@cabin" selected="@(Model.CabinType == cabin ? "selected" : null)">
+                                    @cabin
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AirlineId" class="form-label">Airline</label>
+                        <select asp-for="AirlineId" class="form-select">
+                            <option value="">All Airlines</option>
+                            @foreach (var airline in Model.Airlines)
+                            {
+                                <option value="@airline.AirlineId" selected="@(Model.AirlineId == airline.AirlineId ? "selected" : null)">
+                                    @airline.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Search Flights</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Clear Filters</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h4 class="mb-3">
+            @if (Model.Flights.Any())
+            {
+                <span>@Model.Flights.Count flights found</span>
+            }
+            else
+            {
+                <span>No flights found</span>
+            }
+        </h4>
+
+        @foreach (var flight in Model.Flights)
+        {
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            @if (flight.Airline != null)
+                            {
+                                <img src="~/images/@flight.Airline.ImageName" alt="@flight.Airline.Name" 
+                                     style="max-width: 80px; max-height: 80px;" />
+                                <div class="mt-2 fw-bold">@flight.Airline.Name</div>
+                            }
+                        </div>
+                        
+                        <div class="col-md-5">
+                            <h5>@flight.From to @flight.To</h5>
+                            <p class="mb-1">
+                                <strong>@flight.DepartureTime.ToString("HH:mm") - @flight.ArrivalTime.ToString("HH:mm")</strong>
+                            </p>
+                            <p class="mb-1 text-muted">
+                                Duration: @flight.DurationDisplay
+                            </p>
+                            <p class="mb-0">
+                                <span class="badge bg-info">@flight.CabinType</span>
+                            </p>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <p class="mb-1">
+                                <span class="text-success">Emission: @flight.Emission</span>
+                            </p>
+                            <p class="mb-1">
+                                <span class="text-muted">@flight.AircraftType</span>
+                            </p>
+                            <h5 class="text-primary">$@flight.Price.ToString("F2")</h5>
+                        </div>
+                        
+                        <div class="col-md-2 text-end">
+                            <a asp-action="Details" asp-route-id="@flight.FlightId" 
+                               class="btn btn-outline-primary btn-sm">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

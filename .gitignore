@@ -1,0 +1,11 @@
+echo "bin/
+obj/
+*.db
+*.db-shm
+*.db-wal
+.vs/
+*.user
+*.suo
+publish/
+.vscode/
+" > .gitignore

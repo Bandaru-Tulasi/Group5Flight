@@ -1,0 +1,58 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" asp-area="Admin" asp-controller="Users" asp-action="Index">
+            Admin Portal
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar"
+                aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="adminNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link @(controller == "Users" && action == "Index" ? "active" : "")"
+                       asp-area="Admin" asp-controller="Users" asp-action="Index">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(controller == "Users" && action == "Manage" ? "active" : "")"
+                       asp-area="Admin" asp-controller="Users" asp-action="Manage">
+                        Manage Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(controller == "Users" && action == "Rights" ? "active" : "")"
+                       asp-area="Admin" asp-controller="Users" asp-action="Rights">
+                        Rights and Obligations
+                    </a>
+                </li>
+            </ul>
+            
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                        View Site
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    @RenderBody()
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
