@@ -1,4 +1,4 @@
-name: Build and deploy ASP.Net Core app to Azure Web App - Group5Flights
+name: Build and deploy ASP.Net Core app to Azure Web App - Group5FlightApp2026
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.x'
+          dotnet-version: '10.x'
 
       - name: Restore dependencies
         run: dotnet restore Group5Flights.csproj
@@ -51,14 +51,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B11568A3AFAC4FD1AB6779EA4D9D31D6 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1760E02E49264BBEB101F86AC71D2AF0 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E0D76F7490064EDD91EEE344BD362365 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F14F11CE371C45DF8256F8F890E0C4F6 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_52F9798845574EDBB7834B7740FE8D30 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7F936BA58FAE4E0CBB9FF85C85BACC0B }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Group5Flights'
+          app-name: 'Group5FlightApp2026'
           slot-name: 'Production'
           package: .
