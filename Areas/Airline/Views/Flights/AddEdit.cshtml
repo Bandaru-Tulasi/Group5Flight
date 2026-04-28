@@ -1,7 +1,10 @@
-@model Group5Flight.Models.FlightEditViewModel
+@model Group5Flight.Models.ViewModels.FlightEditViewModel
 @{
     var isEdit = Model.Flight.FlightId != 0;
     ViewData["Title"] = isEdit ? "Edit Flight" : "Add Flight";
+    var dateValue = Model.Flight.FlightId == 0 
+        ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") 
+        : Model.Flight.Date.ToString("yyyy-MM-dd");
 }
 
 <div class="card shadow-sm">
@@ -52,9 +55,8 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label asp-for="Flight.Date" class="form-label">Date</label>
-                        <input asp-for="Flight.Date" type="date" class="form-control" 
-                               value="@Model.Flight.Date.ToString("yyyy-MM-dd")" />
+                        <label for="Flight_Date" class="form-label">Date</label>
+                        <input name="Flight.Date" id="Flight_Date" type="date" class="form-control" value="@dateValue" />
                         <span asp-validation-for="Flight.Date" class="text-danger"></span>
                     </div>
                 </div>

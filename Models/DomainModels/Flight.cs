@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using Group5Flight.Validation;
+using Group5Flight.Models.Validation;
 
-namespace Group5Flight.Models
+namespace Group5Flight.Models.DomainModels
 {
     public class Flight
     {
@@ -41,7 +41,6 @@ namespace Group5Flight.Models
         public string CabinType { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Emission level is required.")]
-        [MaxEmission(5000, ErrorMessage = "Emission cannot exceed 5000 kg CO2e.")]
         public string Emission { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Aircraft Type is required.")]
@@ -54,6 +53,8 @@ namespace Group5Flight.Models
         public int AirlineId { get; set; }
 
         public Airline? Airline { get; set; }
+
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
         public TimeSpan Duration
         {

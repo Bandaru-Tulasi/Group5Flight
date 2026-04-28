@@ -1,22 +1,29 @@
-using Group5Flight.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Group5Flight.Models.DataLayer;
+using Group5Flight.Models.DomainModels;
+using Group5Flight.Models.Utilities;
+using Group5Flight.Models.ViewModels;
 
 namespace Group5Flight.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly AirBnBContext _context;
+        private readonly Repository<Flight> _flightRepo;
+        private readonly Repository<Airline> _airlineRepo;
+        private readonly Repository<Reservation> _reservationRepo;
 
         public HomeController(AirBnBContext context)
         {
-            _context = context;
+            _flightRepo = new Repository<Flight>(context);
+            _airlineRepo = new Repository<Airline>(context);
+            _reservationRepo = new Repository<Reservation>(context);
         }
 
         public IActionResult Index()
         {
             var session = new FlightSession(HttpContext.Session);
-            
+
             if (session.GetSelectedFlightCount() == 0)
             {
                 var cookies = new FlightCookie(Request.Cookies);
@@ -27,9 +34,10 @@ namespace Group5Flight.Controllers
                 }
             }
 
-            var flights = _context.Flights
-                .Include(f => f.Airline)
-                .AsQueryable();
+            var flights = _flightRepo.List(new QueryOptions<Flight>
+            {
+                Includes = "Airline"
+            }).AsQueryable();
 
             var from = session.GetFrom();
             var to = session.GetTo();
@@ -41,17 +49,14 @@ namespace Group5Flight.Controllers
             {
                 flights = flights.Where(f => f.From == from);
             }
-
             if (!string.IsNullOrEmpty(to))
             {
                 flights = flights.Where(f => f.To == to);
             }
-
             if (!string.IsNullOrEmpty(cabin) && cabin != "All")
             {
                 flights = flights.Where(f => f.CabinType == cabin);
             }
-
             if (!string.IsNullOrEmpty(dateStr))
             {
                 if (DateTime.TryParse(dateStr, out var date))
@@ -59,7 +64,6 @@ namespace Group5Flight.Controllers
                     flights = flights.Where(f => f.Date.Date == date.Date);
                 }
             }
-
             if (airlineId.HasValue)
             {
                 flights = flights.Where(f => f.AirlineId == airlineId.Value);
@@ -72,10 +76,10 @@ namespace Group5Flight.Controllers
                 To = to,
                 CabinType = cabin,
                 DepartureDate = string.IsNullOrEmpty(dateStr) ? DateTime.Now.AddDays(1) : DateTime.Parse(dateStr),
-                Airlines = _context.Airlines.ToList(),
+                Airlines = _airlineRepo.List(new QueryOptions<Airline>()).ToList(),
                 AirlineId = airlineId,
-                FromCities = _context.Flights.Select(f => f.From).Distinct().ToList(),
-                ToCities = _context.Flights.Select(f => f.To).Distinct().ToList()
+                FromCities = _flightRepo.List(new QueryOptions<Flight>()).Select(f => f.From).Distinct().ToList(),
+                ToCities = _flightRepo.List(new QueryOptions<Flight>()).Select(f => f.To).Distinct().ToList()
             };
 
             return View(vm);
@@ -85,17 +89,14 @@ namespace Group5Flight.Controllers
         public IActionResult Filter(HomeViewModel vm)
         {
             var session = new FlightSession(HttpContext.Session);
-            
             session.SetFrom(vm.From);
             session.SetTo(vm.To);
             session.SetCabinType(vm.CabinType);
             session.SetAirlineId(vm.AirlineId);
-
             if (vm.DepartureDate.HasValue)
             {
                 session.SetDate(vm.DepartureDate.Value.ToString("yyyy-MM-dd"));
             }
-
             return RedirectToAction("Index");
         }
 
@@ -111,22 +112,17 @@ namespace Group5Flight.Controllers
 
         public IActionResult Details(int id)
         {
-            var flight = _context.Flights
-                .Include(f => f.Airline)
-                .FirstOrDefault(f => f.FlightId == id);
-
+            var flight = _flightRepo.Get(id);
             if (flight == null)
             {
                 return NotFound();
             }
-
             var session = new FlightSession(HttpContext.Session);
             ViewBag.From = session.GetFrom();
             ViewBag.To = session.GetTo();
             ViewBag.Date = session.GetDate();
             ViewBag.CabinType = session.GetCabinType();
             ViewBag.AirlineId = session.GetAirlineId();
-
             return View(flight);
         }
 
@@ -135,14 +131,11 @@ namespace Group5Flight.Controllers
         {
             var session = new FlightSession(HttpContext.Session);
             session.AddSelectedFlight(id);
-
             var cookies = new FlightCookie(Response.Cookies);
             cookies.SetSelectedFlightIds(session.GetSelectedFlights());
-
-            var flight = _context.Flights.Find(id);
+            var flight = _flightRepo.Get(id);
             var flightName = flight != null ? $"{flight.From} to {flight.To}" : "Flight";
             TempData["Message"] = $"{flightName} selected successfully";
-
             return RedirectToAction("Index");
         }
 
@@ -150,12 +143,10 @@ namespace Group5Flight.Controllers
         {
             var session = new FlightSession(HttpContext.Session);
             var selectedIds = session.GetSelectedFlights();
-
-            var flights = _context.Flights
-                .Include(f => f.Airline)
-                .Where(f => selectedIds.Contains(f.FlightId))
-                .ToList();
-
+            var flights = _flightRepo.List(new QueryOptions<Flight>
+            {
+                Includes = "Airline"
+            }).Where(f => selectedIds.Contains(f.FlightId)).ToList();
             return View(flights);
         }
 
@@ -164,12 +155,9 @@ namespace Group5Flight.Controllers
         {
             var session = new FlightSession(HttpContext.Session);
             session.RemoveSelectedFlight(id);
-
             var cookies = new FlightCookie(Response.Cookies);
             cookies.SetSelectedFlightIds(session.GetSelectedFlights());
-
             TempData["Message"] = "Flight removed from selection";
-
             return RedirectToAction("Selection");
         }
 
@@ -178,12 +166,36 @@ namespace Group5Flight.Controllers
         {
             var session = new FlightSession(HttpContext.Session);
             session.ClearSelectedFlights();
-
             var cookies = new FlightCookie(Response.Cookies);
             cookies.RemoveSelectedFlightIds();
-
             TempData["Message"] = "All selections cleared";
+            return RedirectToAction("Selection");
+        }
 
+        [HttpPost]
+        public IActionResult Reserve()
+        {
+            var session = new FlightSession(HttpContext.Session);
+            var selectedIds = session.GetSelectedFlights();
+            if (!selectedIds.Any())
+            {
+                TempData["Error"] = "No flights selected to reserve.";
+                return RedirectToAction("Selection");
+            }
+            var existingReservations = _reservationRepo.List(new QueryOptions<Reservation>())
+                .Where(r => selectedIds.Contains(r.FlightId))
+                .Select(r => r.FlightId)
+                .ToList();
+            var newReservations = selectedIds
+                .Where(id => !existingReservations.Contains(id))
+                .Select(id => new Reservation { FlightId = id, ReservedDate = DateTime.Now })
+                .ToList();
+            foreach (var reservation in newReservations)
+            {
+                _reservationRepo.Insert(reservation);
+            }
+            _reservationRepo.Save();
+            TempData["Message"] = $"{newReservations.Count} flights reserved successfully.";
             return RedirectToAction("Selection");
         }
     }

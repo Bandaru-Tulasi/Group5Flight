@@ -1,7 +1,7 @@
-@model List<Group5Flight.Models.Flight>
+@model List<Group5Flight.Models.DomainModels.Flight>
 @{
     ViewData["Title"] = "Selected Flights";
-    var session = new Group5Flight.Models.FlightSession(Context.Session);
+    var session = new Group5Flight.Models.Utilities.FlightSession(Context.Session);
     var from = session.GetFrom();
     var to = session.GetTo();
     var date = session.GetDate();
@@ -86,6 +86,9 @@
             {
                 <form asp-action="ClearAll" method="post" class="d-inline">
                     <button type="submit" class="btn btn-warning">Clear All Selections</button>
+                </form>
+                <form asp-action="Reserve" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-success">Reserve All Flights</button>
                 </form>
             }
         </div>

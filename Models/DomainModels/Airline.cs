@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Group5Flight.Models
+namespace Group5Flight.Models.DomainModels
 {
     public class Airline
     {

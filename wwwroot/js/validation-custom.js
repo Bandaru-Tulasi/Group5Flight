@@ -2,12 +2,25 @@ $.validator.addMethod("futuredatewithinyears", function (value, element, params)
     if (!value) {
         return true;
     }
-    var date = new Date(value);
+    var parts = value.split("-");
+    var inputYear = parseInt(parts[0]);
+    var inputMonth = parseInt(parts[1]);
+    var inputDay = parseInt(parts[2]);
     var today = new Date();
-    today.setHours(0, 0, 0, 0);
-    var maxDate = new Date();
-    maxDate.setFullYear(today.getFullYear() + parseInt(params.maxyears));
-    return date > today && date <= maxDate;
+    var todayYear = today.getFullYear();
+    var todayMonth = today.getMonth() + 1;
+    var todayDay = today.getDate();
+    var inputDateValue = inputYear * 10000 + inputMonth * 100 + inputDay;
+    var todayValue = todayYear * 10000 + todayMonth * 100 + todayDay;
+    if (inputDateValue <= todayValue) {
+        return false;
+    }
+    var maxYear = todayYear + parseInt(params.maxyears);
+    var maxDateValue = maxYear * 10000 + todayMonth * 100 + todayDay;
+    if (inputDateValue > maxDateValue) {
+        return false;
+    }
+    return true;
 });
 
 $.validator.unobtrusive.adapters.addSingleVal("futuredatewithinyears", "maxyears");
@@ -17,7 +30,10 @@ $.validator.addMethod("maxemission", function (value, element, params) {
         return true;
     }
     var emissionValue = parseInt(value);
-    return !isNaN(emissionValue) && emissionValue <= parseInt(params.maxvalue);
+    if (isNaN(emissionValue)) {
+        return true;
+    }
+    return emissionValue <= parseInt(params.maxvalue);
 });
 
 $.validator.unobtrusive.adapters.addSingleVal("maxemission", "maxvalue");

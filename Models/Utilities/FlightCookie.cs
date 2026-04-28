@@ -1,4 +1,4 @@
-namespace Group5Flight.Models
+namespace Group5Flight.Models.Utilities
 {
     public class FlightCookie
     {
@@ -32,8 +32,8 @@ namespace Group5Flight.Models
         public void SetSelectedFlightIds(IEnumerable<int> ids)
         {
             string value = string.Join(Delimiter, ids);
-            var options = new CookieOptions 
-            { 
+            var options = new CookieOptions
+            {
                 Expires = DateTime.Now.AddDays(DaysToKeep),
                 HttpOnly = true,
                 IsEssential = true

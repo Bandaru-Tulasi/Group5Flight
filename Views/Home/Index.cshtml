@@ -1,4 +1,4 @@
-﻿@model Group5Flight.Models.HomeViewModel
+﻿@model Group5Flight.Models.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "Search Flights";
 }
@@ -47,7 +47,7 @@
                     <div class="mb-3">
                         <label asp-for="CabinType" class="form-label">Cabin Type</label>
                         <select asp-for="CabinType" class="form-select">
-                            @foreach (var cabin in Group5Flight.Models.HomeViewModel.CabinTypes)
+                            @foreach (var cabin in Group5Flight.Models.ViewModels.HomeViewModel.CabinTypes)
                             {
                                 <option value="@cabin" selected="@(Model.CabinType == cabin ? "selected" : null)">
                                     @cabin

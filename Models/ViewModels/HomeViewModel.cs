@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Group5Flight.Models.DomainModels;
 
-namespace Group5Flight.Models
+namespace Group5Flight.Models.ViewModels
 {
     public class HomeViewModel
     {
@@ -17,7 +18,7 @@ namespace Group5Flight.Models
 
         public List<string> FromCities { get; set; } = new List<string>();
         public List<string> ToCities { get; set; } = new List<string>();
-        
+
         public static List<string> CabinTypes { get; } = new List<string>
         {
             "All",

@@ -1,4 +1,6 @@
-namespace Group5Flight.Models
+using Group5Flight.Models.ExtensionMethods;
+
+namespace Group5Flight.Models.Utilities
 {
     public class FlightSession
     {
