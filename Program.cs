@@ -27,6 +27,7 @@ using (var scope = app.Services.CreateScope())
     {
         Directory.CreateDirectory(dbDirectory);
     }
+    context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
 }
 
